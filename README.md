@@ -1,41 +1,82 @@
 日常習慣「隱形開銷」與微型理財儀表板
-Micro-Finance & Expense Optimizer 是一個可直接部署到 GitHub Pages 的個人理財作品。它把日常生活中的拿鐵因子、少用訂閱、外送與零碎消費，轉換成月薪分配、長期複利機會成本，以及具體的夢想 BOM 購買力。
+Micro-Finance & Expense Optimizer
+把每天不經意花掉的小錢，轉換成薪資分配、長期複利機會成本與具體生活目標。
 
-專案內容
-本 repository 分成兩個部分：
+專案概述
+本專案聚焦於個人日常生活中的「隱形開銷」，也就是常被稱為拿鐵因子的微小習慣支出。透過一套標準化 Skill 工作流程，將手搖飲、咖啡、外送、少用訂閱等支出轉換為月平均、年支出、複利未來價值，並進一步拆解成可感知的夢想 BOM 購買力。
 
-Skill 工作流程：見 SKILL.md，定義 CSV 清洗分類、時間維度標準化、複利公式與夢想 BOM 拆解。
-互動式作品：見 index.html、styles.css、script.js，提供可操作的微型理財儀表板。
-功能
+這個 repository 同時包含：
+
+類型	說明	主要檔案
+Skill 工作流程	定義資料清洗、分類、標準化與複利計算邏輯	SKILL.md
+互動式作品	可直接開啟的微型理財儀表板	index.html, styles.css, script.js
+CSV 工具	用 Python 分類記帳 CSV	scripts/process_expenses.py
+範例資料	可用於測試匯入功能	examples/sample-expenses.csv
+功能亮點
 輸入月薪、必要支出、每日/每週/每月隱形開銷。
 使用滑桿調整「降級消費比例」、「年化報酬率」、「觀察年限」。
 匯入日常記帳 CSV，依關鍵字自動分類必要支出與隱形開銷。
-以原生 CSS conic-gradient 繪製薪資分配圓餅圖，不依賴外部 CDN。
-以原生 SVG 繪製「維持現狀」與「改變習慣」的複利折線圖。
+使用原生 CSS conic-gradient 繪製薪資分配圓餅圖，不依賴外部 CDN。
+使用原生 SVG 繪製複利資產累積折線圖。
 將期滿累積金額換算為曼谷自由行、高階羽球拍、雪妃爾 4 股/5 股線材與飲料提袋產量。
-使用方式
-直接開啟 index.html 即可使用。若部署到 GitHub Pages，不需要後端服務、建置流程或外部圖表套件。
+快速開始
+直接用瀏覽器開啟：
 
-CSV 欄位建議：
+index.html
+本專案不需要後端、不需要安裝套件，也不需要建置流程。上傳到 GitHub Pages 後即可作為靜態網站使用。
+
+CSV 匯入格式
+儀表板支援匯入日常記帳 CSV。建議欄位如下：
 
 date,description,amount
 2026-05-01,咖啡,80
 2026-05-02,房租,16000
 2026-05-03,Netflix 訂閱,390
-也可以使用範例檔：
+範例檔案：
 
 examples/sample-expenses.csv
-Python CSV 清洗腳本
-scripts/process_expenses.py 可在命令列中分類 CSV：
+CSV 分類邏輯會依照 description 欄位中的關鍵字進行判斷：
+
+分類	範例關鍵字
+必要支出	房租、租金、水電、健保、保險、學貸、交通、捷運、雜貨
+隱形開銷	咖啡、拿鐵、手搖、飲料、訂閱、外送、點心、宵夜、Netflix、Spotify
+其他支出	未命中上述規則的項目
+Python CSV 清洗工具
+除了網頁匯入，也可以用 Python 腳本在命令列中處理 CSV：
 
 python scripts/process_expenses.py examples/sample-expenses.csv
-輸出會包含必要支出、隱形開銷、其他支出、月份數與月平均摘要，方便把同一套 Skill 用在網頁之外的工作流程。
+輸出內容包含：
 
+monthly_average：必要支出、隱形開銷與其他支出的月平均
+totals：各分類總額
+counts：各分類筆數
+month_count：CSV 橫跨月份數
+rows：每筆資料的分類結果
 核心公式
+將不同頻率的支出轉換為月支出：
+
 E_month = (E_day * 30.4) + (E_week * 4.33) + E_fixed_monthly
+年支出：
+
 E_year = E_month * 12
+每月新增可儲蓄金額：
+
 E_month_saved = E_hidden_month * downgrade_ratio
+複利未來價值：
+
 FV = E_month_saved * (((1 + r / 12)^(12n) - 1) / (r / 12))
+其中：
+
+r：年化報酬率
+n：觀察年限
+downgrade_ratio：降級消費比例
+夢想 BOM 表
+儀表板會把期滿複利累積金額換算成具體購買力：
+
+類別	拆解邏輯
+海外旅遊專案	曼谷自由行套組：來回機票、BTS 交通、住宿
+專業運動設備	高階羽球拍、線與握把布、保護套
+手作材料	雪妃爾 4 股/5 股線材捲數與飲料提袋成品估算
 檔案結構
 .
 ├── index.html
@@ -43,7 +84,15 @@ FV = E_month_saved * (((1 + r / 12)^(12n) - 1) / (r / 12))
 ├── script.js
 ├── SKILL.md
 ├── README.md
-├── scripts/
-│   └── process_expenses.py
-└── examples/
-    └── sample-expenses.csv
+├── LICENSE
+├── examples/
+│   └── sample-expenses.csv
+└── scripts/
+    └── process_expenses.py
+部署建議
+將此 repository 上傳到 GitHub。
+進入 repository 的 Settings。
+開啟 Pages。
+Source 選擇 Deploy from a branch。
+Branch 選擇 main，資料夾選擇 /root。
+完成後即可用 GitHub Pages 開啟儀表板。
